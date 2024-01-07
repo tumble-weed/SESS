@@ -2,7 +2,7 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import convert_to_gray
+from SESS.utils import convert_to_gray
 from torch.autograd import Variable
 import numpy as np
 

@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-from cam import BaseCAM
+from SESS.cam import BaseCAM
 
 
 class ScoreCAM(BaseCAM):

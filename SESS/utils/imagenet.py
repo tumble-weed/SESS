@@ -4,7 +4,7 @@
 import json
 from collections.abc import Mapping
 
-from importlib_resources import path
+from importlib_resources import files as path
 
 from . import resources
 

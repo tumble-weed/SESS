@@ -2,7 +2,7 @@ from torchvision import transforms
 from torch.nn import functional as F
 import numpy as np
 import cv2
-from utils import apply_transforms, load_image, save_img_with_heatmap, sliding_window, resize_img, save_heatmap, tensor_to_img
+from SESS.utils import apply_transforms, load_image, save_img_with_heatmap, sliding_window, resize_img, save_heatmap, tensor_to_img
 
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset

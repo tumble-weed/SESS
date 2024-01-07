@@ -1,8 +1,8 @@
 import torch
 import torch.nn.functional as F
 from kornia.filters.gaussian import gaussian_blur2d
-from utils import group_sum
-from cam import BaseCAM
+from SESS.utils import group_sum
+from SESS.cam import BaseCAM
 
 blur = lambda x: gaussian_blur2d(x, kernel_size=(51, 51), sigma=(50., 50.))
 

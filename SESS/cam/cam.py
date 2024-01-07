@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from cam import BaseCAM
+from SESS.cam import BaseCAM
 
 # class CAM(BaseCAM):
 #     def __init__(self, model, target_layer=None):

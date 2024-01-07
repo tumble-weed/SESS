@@ -1,5 +1,5 @@
 import torch
-from utils import convert_to_gray
+from SESS.utils import convert_to_gray
 from torch.autograd import Variable
 
 

@@ -7,7 +7,7 @@ from SESS.utils import apply_transforms, load_image, save_img_with_heatmap, slid
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 import torch
-
+import dutils
 class Patch:
     def __init__(self, source_img, coordinate, main_id=-1, sub_id=-1):
         """
@@ -27,6 +27,7 @@ class Patch:
     def patch(self):
         # print(self.source_img.shape, self.coordinate)
         x1, y1, x2, y2 = self.coordinate
+        # dutils.pause()
         return self.source_img[:, :, y1:y2, x1:x2]
 
 class SESS:
@@ -130,14 +131,18 @@ class SESS:
             def __getitem__(self, idx):
                 # print(idx, self.patches[idx].patch()[0].shape)
                 return idx, self.patches[idx].patch()[0]
-
-        num_workers = 4
+        
+        num_workers = 0
+        # num_workers = 4
         batch_size = 128
+        # dutils.pause()
         loader = DataLoader(
             CustomDataset(patches),
             batch_size=batch_size,
             shuffle=False,
             num_workers=num_workers,
+            
+            
         )
 
         logits = []

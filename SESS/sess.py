@@ -159,6 +159,8 @@ class SESS:
         # print(logits.shape)
         scores = F.softmax(logits, dim=1)[:, class_idx]
         # print('score shape:', scores.shape)
+        if scores.ndim == 3:
+            scores = scores.mean(dim=(-1,-2))
         return scores
 
     def get_saliency(self, patches, probs, class_idx=None, theta=0.):

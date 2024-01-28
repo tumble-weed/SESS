@@ -18,6 +18,8 @@ class GroupCAM(BaseCAM):
         x = x.to(next(self.model.parameters()).device)
         b, c, h, w = x.size()
         logit = self.model(x)
+        if logit.ndim == 4:
+            logit = logit.mean(dim=(-1,-2))
 
         if class_idx is None:
             predicted_class = logit.max(1)[-1]
@@ -48,11 +50,13 @@ class GroupCAM(BaseCAM):
             saliency_map = torch.cat(saliency_map, dim=0)
         saliency_map = F.relu(saliency_map)
         saliency_map = F.interpolate(saliency_map, size=(h, w), mode='bilinear', align_corners=False)
-
         norm_saliency_map = saliency_map.reshape(self.groups, -1)
         inter_min = norm_saliency_map.min(dim=-1, keepdim=True)[0]
         inter_max = norm_saliency_map.max(dim=-1, keepdim=True)[0]
+        inter_max[inter_max == inter_min] = 1
         norm_saliency_map = (norm_saliency_map-inter_min) / (inter_max - inter_min)
+        #assert not norm_saliency_map.isnan().any()
+
         norm_saliency_map = norm_saliency_map.reshape(self.groups, 1, h, w)
 
         with torch.no_grad():
@@ -74,14 +78,22 @@ class GroupCAM(BaseCAM):
         score = F.relu(score).unsqueeze(-1).unsqueeze(-1)
         # score = score.unsqueeze(-1).unsqueeze(-1)
         score_saliency_map = torch.sum(saliency_map * score, dim=0, keepdim=True)
+        if score_saliency_map.isnan().any() or score_saliency_map.isinf().any():
+            print('shouldnt be here')
+            breakpoint()
 
+ 
         score_saliency_map_min, score_saliency_map_max = score_saliency_map.min(), score_saliency_map.max()
         if score_saliency_map_min == score_saliency_map_max:
             # return None
-            score_saliency_map.detach().cpu().numpy(), F.softmax(logit, dim=1).detach()
+            return score_saliency_map.detach().cpu().numpy(), F.softmax(logit, dim=1).detach()
 
         score_saliency_map = (score_saliency_map - score_saliency_map_min) / (
                 score_saliency_map_max - score_saliency_map_min).data
+        if score_saliency_map.isnan().any() or score_saliency_map.isinf().any():
+            print('shouldnt be here')
+            breakpoint()
+
         return score_saliency_map.detach().cpu().numpy(), F.softmax(logit, dim=1).detach()
 
     def __call__(self, x, class_idx=None, retain_graph=False):

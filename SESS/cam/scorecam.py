@@ -55,6 +55,8 @@ class ScoreCAM(BaseCAM):
                 # predication on masked x
                 output = self.model(x * norm_saliency_map)
                 output = F.softmax(output, dim=-1)
+                if output.ndim == 4:
+                    output = output.mean(dim=(-1,-2))
                 score = output[0][predicted_class]
 
                 score_saliency_map += score * saliency_map

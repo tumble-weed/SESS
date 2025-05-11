@@ -31,6 +31,16 @@ class ScoreCAM(BaseCAM):
         # score.backward(retain_graph=retain_graph)
 
         activations = self.activations['value']
+        #p46()
+        if 'swin' in str(self.model.__class__).lower():
+           activations = activations.view(activations.shape[0],7,7,activations.shape[-1]) 
+           activations = torch.permute(activations,(0,3,1,2))
+        elif 'vit' in str(self.model.__class__).lower():
+           activations = activations[:,1:,:]
+           activations = activations.view(activations.shape[0],14,14,activations.shape[-1]) 
+           activations = torch.permute(activations,(0,3,1,2))
+        #if activations.ndim == 3:
+        #    p46()
         b, k, u, v = activations.size()
 
         score_saliency_map = torch.zeros((1, 1, h, w))

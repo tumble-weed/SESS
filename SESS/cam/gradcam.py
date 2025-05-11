@@ -36,6 +36,21 @@ class GradCAM(BaseCAM):
 
         gradients = torch.stack(gradients_list, dim=0)
         activations = self.activations['value'].data
+
+        if 'swin' in str(self.model.__class__).lower():
+           activations = activations.view(activations.shape[0],7,7,activations.shape[-1]) 
+           activations = torch.permute(activations,(0,3,1,2))
+           gradients = gradients.view(gradients.shape[0],7,7,gradients.shape[-1]) 
+           gradients = torch.permute(gradients,(0,3,1,2))
+        elif 'vit' in str(self.model.__class__).lower():
+           activations = activations[:,1:,:]
+           gradients = gradients[:,1:,:]
+           activations = activations.view(activations.shape[0],14,14,activations.shape[-1]) 
+           activations = torch.permute(activations,(0,3,1,2))
+           gradients = gradients.view(gradients.shape[0],14,14,gradients.shape[-1]) 
+           gradients = torch.permute(gradients,(0,3,1,2))        
+
+       
         b, k, u, v = activations.size()
 
         alpha = gradients.view(b, k, -1).mean(2)
